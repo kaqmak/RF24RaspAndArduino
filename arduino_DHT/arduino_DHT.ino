@@ -16,6 +16,7 @@
 #include "nRF24L01.h"
 #include "RF24.h"
 #include "DHT.h"
+#include "LowPower.h"
 #define LIGHTPIN 0
 #define LIGHTPWRPIN 6 // power pin for ligthsensor
 #define TEMPINPIN 9     // DHT signal pin
@@ -231,7 +232,7 @@ void loop(void)
     unsigned long started_waiting_at = millis();
     bool timeout = false;
     while ( ! radio.available() && ! timeout )
-      if (millis() - started_waiting_at > 500 )
+      if (millis() - started_waiting_at > 2000 )
         timeout = true;
 
     // Describe the results
@@ -257,11 +258,20 @@ void loop(void)
       Serial.print(len);
       Serial.print(F(" value="));
       Serial.println(receive_payload) ;
-      Serial.println("slut");
+      Serial.println("Going to sleep");
+      delay(100);
+      for(int i=0; i<75; i++){
+      LowPower.idle(SLEEP_8S, ADC_OFF, TIMER2_OFF, TIMER1_OFF, TIMER0_OFF, 
+                    SPI_OFF, USART0_OFF, TWI_OFF);
+      }
+      
     }
 
-    // Try again 1s later
-    delay(600000);
+    // sleep for a while
+    // ATmega328P, ATmega168
+    delay(100);
+    
+
   }
 
 
